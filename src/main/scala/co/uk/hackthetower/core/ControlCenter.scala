@@ -29,7 +29,7 @@ class ControlCenter {
   protected def wrapCommand(command: ServerCommand) =
     if(Random.nextInt(100) < 1) Xor.left("NETWORK ERROR!") else Xor.right(command)
 
-  protected def logInvalidCommand(errors: NonEmptyList[String]) = logInvalidCommand(errors.unwrap)
+  protected def logInvalidCommand(errors: NonEmptyList[String]): List[BotCommands] = logInvalidCommand(errors.unwrap)
 
   protected def logInvalidCommand(errors: List[String]): List[BotCommands] =
     errors.flatMap(msg => List(Log(msg), Say(msg)))
