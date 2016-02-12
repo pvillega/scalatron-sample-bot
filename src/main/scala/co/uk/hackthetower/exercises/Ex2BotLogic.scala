@@ -1,7 +1,7 @@
 package co.uk.hackthetower.exercises
 
 import cats.data.Xor
-import co.uk.hackthetower.commands.bot.BotCommands
+import co.uk.hackthetower.commands.bot._
 import co.uk.hackthetower.commands.server.ServerCommand
 
 /**
@@ -29,5 +29,16 @@ import co.uk.hackthetower.commands.server.ServerCommand
   */
 object Ex2BotLogic {
 
-  def processServerCommand(command: Xor[String, ServerCommand]): Xor[String, List[BotCommands]] = Xor.left("Not sure what to do")
+  def processServerCommand(command: Xor[String, ServerCommand]): Xor[String, List[BotCommands]] =
+    Xor.right(List(
+      DrawLine((2, 2), (4, 4), "#ff8800"),
+      Explode(1),
+      Log("log"),
+      MarkCell((5, 5), "#ff8800"),
+      Move((1, 1)),
+      Say("HA HA!"),
+      Set(Map("me" -> "you")),
+      Spawn((3, 0), "minime", 1, Map("mini" -> "me")),
+      Status("status)")
+    ))
 }

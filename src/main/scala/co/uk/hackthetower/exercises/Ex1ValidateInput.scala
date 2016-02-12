@@ -1,8 +1,8 @@
 package co.uk.hackthetower.exercises
 
-import cats.data.Validated.Invalid
+import cats.data.Validated.{Valid, Invalid}
 import cats.data.{OneAnd, ValidatedNel}
-import co.uk.hackthetower.commands.server.ServerCommand
+import co.uk.hackthetower.commands.server.{Goodbye, ServerCommand}
 
 /**
   * First exercise: Implement method 'parseInput'.
@@ -31,6 +31,6 @@ object Ex1ValidateInput {
     * @param input the input sent by the server. As per specification it will only have 1 command.
     * @return a ValidatedNel[String, ServerCommand], equivalent to Validated[NonEmptyList[String], ServerCommand]
     */
-  def parseInput(input: String): ValidatedNel[String, ServerCommand] = Invalid(OneAnd("Missing implementation", List()))
+  def parseInput(input: String): ValidatedNel[String, ServerCommand] = Valid(Goodbye(10))
 
 }
