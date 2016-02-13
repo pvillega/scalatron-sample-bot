@@ -1,8 +1,9 @@
 package co.uk.hackthetower.exercises
 
-import cats.data.Validated.{Valid, Invalid}
-import cats.data.{OneAnd, ValidatedNel}
-import co.uk.hackthetower.commands.server.{React, Welcome, Goodbye, ServerCommand}
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.ValidatedNel
+import cats.data.NonEmptyList
+import co.uk.hackthetower.commands.server.{Goodbye, React, ServerCommand, Welcome}
 
 /**
   * First exercise: Implement method 'parseInput'.
@@ -38,10 +39,9 @@ object Ex1ValidateInput {
     case Wcm(name, apocalypse, round, maxslaves) => Valid(Welcome(name, apocalypse.toInt, round.toInt, maxslaves.toInt))
     case Gbye(energy) => Valid(Goodbye(energy.toInt))
     case Rct(generation, name, time, view, energy, master1, master2, col1, col2, slaves, other) => Valid(React(generation.toInt, name, time.toInt, view, energy, (master1.toInt, master2.toInt), (col1.toInt, col2.toInt), slaves.toInt, parseOther(other)))
-    case _ => Invalid(OneAnd("Not a valid server command", List()))
+    case _ => Invalid(NonEmptyList("Not a valid server command"))
   }
 
   protected def parseOther(other: String): Map[String, String] =
     other.split(",").filterNot(_.isEmpty).map{ case Pair(k,v) => k -> v }.toMap
-
 }
