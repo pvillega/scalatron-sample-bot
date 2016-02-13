@@ -1,5 +1,9 @@
 package co.uk.hackthetower.commands.server
 
+import cats._
+import cats.data._
+import cats.std.all._
+
 /**
   * Welcome(name=String,apocalypse=int,round=int,maxslaves=int)
   *
@@ -14,3 +18,25 @@ package co.uk.hackthetower.commands.server
   *
   */
 case class Welcome(name: String, apocalypse: Int, round: Int, maxslaves: Int) extends ServerCommand
+
+object Welcome {
+
+  private val Name = "name"
+  private val Apocalypse = "apocalypse"
+  private val Round = "round"
+  private val MaxSlaves = "maxslaves"
+
+  val allKeys = Name :: Apocalypse :: Round :: MaxSlaves :: Nil
+
+  def fromMap(input: Map[String, String]): ValidatedNel[String, ServerCommand] =
+    Apply[ValidatedNel[String, ?]].map4(
+      ServerCommand.isPresent(input, Name),
+      ServerCommand.isNumeric(input, Apocalypse),
+      ServerCommand.isNumeric(input, Round),
+      ServerCommand.isNumeric(input, MaxSlaves)
+    ) {
+      case (name, apocalypse, round, maxSlaves) =>
+        Welcome(name, apocalypse, round, maxSlaves)
+    }
+
+}

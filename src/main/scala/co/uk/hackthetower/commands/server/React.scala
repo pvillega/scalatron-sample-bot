@@ -1,5 +1,8 @@
 package co.uk.hackthetower.commands.server
 
+import cats._
+import cats.data._
+import cats.std.all._
 /**
   * React(generation=int,name=string,time=int,view=string,energy=string,master=int:int,collision=int:int,slaves=int,...)
   *
@@ -19,4 +22,36 @@ package co.uk.hackthetower.commands.server
   *
   * The control function is expected to return a valid response, which may consist of zero or more commands separated by a pipe (|) character. The available commands are listed in the section Opcodes of Plugin-to-Server Commands.
   */
-case class React(generation: Int, name: String, time : Int, view: String, energy: String, master: (Int, Int), collision: (Int, Int), slaves: Int, state: Map[String, String]) extends ServerCommand
+case class React(generation: Int, name: String, time: Int, view: String, energy: String, master: Option[(Int, Int)], collision: Option[(Int, Int)], slaves: Int, state: Map[String, String]) extends ServerCommand
+
+object React {
+
+  private val Generation = "generation"
+  private val Name = "name"
+  private val Time = "time"
+  private val View = "view"
+  private val Energy = "energy"
+  private val Master = "master"
+  private val Collision = "collision"
+  private val Slaves = "slaves"
+
+  val allKeys = Generation :: Name :: Time :: View :: Energy :: Master :: Collision :: Slaves :: Nil
+
+  def fromMap(input: Map[String, String]): ValidatedNel[String, ServerCommand] =
+    Apply[ValidatedNel[String, ?]].map8(
+      ServerCommand.isNumeric(input, Generation),
+      ServerCommand.isPresent(input, Name),
+      ServerCommand.isNumeric(input, Time),
+      ServerCommand.isPresent(input, View),
+      ServerCommand.isPresent(input, Energy),
+      ServerCommand.isOptionalIntInt(input, Master),
+      ServerCommand.isOptionalIntInt(input, Collision),
+      ServerCommand.isNumeric(input, Slaves)
+    ) {
+      case (generation, name, time, view, energy, master, collision, slaves) => {
+        val state: Map[String, String] = input -- allKeys
+        React(generation, name, time, view, energy, master, collision, slaves, state)
+      }
+    }
+
+}
