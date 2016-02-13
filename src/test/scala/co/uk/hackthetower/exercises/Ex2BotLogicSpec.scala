@@ -13,4 +13,13 @@ class Ex2BotLogicSpec extends FlatSpec with Matchers {
 //  }
 
   //TODO: add tests for your logic!
+
+
+  "direction" should "be between -1 and 1" in {
+    (1 to 1000).foreach { i =>
+      val x = Ex2BotLogic.direction
+      x should be >=(-1)
+      x should be <=1
+    }
+  }
 }

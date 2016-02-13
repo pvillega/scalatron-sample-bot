@@ -2,7 +2,9 @@ package co.uk.hackthetower.exercises
 
 import cats.data.Xor
 import co.uk.hackthetower.commands.bot._
-import co.uk.hackthetower.commands.server.ServerCommand
+import co.uk.hackthetower.commands.server.{React, ServerCommand}
+
+import scala.util.Random
 
 /**
   * Second exercise: Implement method 'processServerCommand'
@@ -30,15 +32,22 @@ import co.uk.hackthetower.commands.server.ServerCommand
 object Ex2BotLogic {
 
   def processServerCommand(command: Xor[String, ServerCommand]): Xor[String, List[BotCommands]] =
-    Xor.right(List(
-      DrawLine((2, 2), (4, 4), "#ff8800"),
-      Explode(1),
-      Log("log"),
-      MarkCell((5, 5), "#ff8800"),
-      Move((1, 1)),
-      Say("HA HA!"),
-      Set(Map("me" -> "you")),
-      Spawn((3, 0), "minime", 1, Map("mini" -> "me")),
-      Status("status)")
-    ))
+    command.bimap(identity, act)
+
+  def act(s: ServerCommand): List[BotCommands] = s match {
+    case React(generation, _,_,_,_,_,_,_,_) =>
+      if(generation == 0) Move((direction, direction)) :: spawn
+      else Move((direction, direction)) :: boom
+    case _ => Say("Ignore command") :: Nil
+  }
+
+  def direction = Random.nextInt(3) - 1
+
+  private def spawn = if(Random.nextInt(100) < 25) {
+    Status("Go!") :: Spawn((direction,direction), "Son", 100, Map.empty) :: Nil
+  } else Status("I'm winning!") :: Nil
+
+  private def boom = if(Random.nextInt(100) < 5) {
+    Status("Boom!") :: Explode(5) :: Nil
+  } else Status("I'm hunting!") :: Nil
 }
